@@ -1,11 +1,25 @@
-# compare.py
-
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from geopy.distance import geodesic
 
-def get_similars_euclidean_standard(df, input_dict, n=5):
+def get_similars_euclidean_standard(
+    df: pd.DataFrame, 
+    input_dict: dict, 
+    n: int = 5
+) -> pd.DataFrame:
+    """
+    Encuentra las propiedades más similares usando la distancia Euclidiana
+    con estandarización (StandardScaler) de las características numéricas.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con datos de propiedades incluyendo 'property_id' y características numéricas.
+        input_dict (dict): Diccionario con las características de la propiedad de entrada.
+        n (int): Número de propiedades similares a devolver (default=5).
+
+    Retorna:
+        pd.DataFrame: Subconjunto de propiedades ordenado por similitud (distancia Euclidiana más pequeña).
+    """
     non_numeric_keys = {"neighborhood", "property_type"}
     features = [k for k in input_dict.keys() if k not in non_numeric_keys]
 
@@ -23,7 +37,23 @@ def get_similars_euclidean_standard(df, input_dict, n=5):
     return df_sub.sort_values('similarity_score').head(n)
 
 
-def get_similars_euclidean_minmax(df, input_dict, n=5):
+def get_similars_euclidean_minmax(
+    df: pd.DataFrame, 
+    input_dict: dict, 
+    n: int = 5
+) -> pd.DataFrame:
+    """
+    Encuentra las propiedades más similares usando la distancia Euclidiana
+    con normalización Min-Max (MinMaxScaler) de las características numéricas.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con datos de propiedades incluyendo 'property_id' y características numéricas.
+        input_dict (dict): Diccionario con las características de la propiedad de entrada.
+        n (int): Número de propiedades similares a devolver (default=5).
+
+    Retorna:
+        pd.DataFrame: Subconjunto de propiedades ordenado por similitud (distancia Euclidiana más pequeña).
+    """
     non_numeric_keys = {"neighborhood", "property_type"}
     features = [k for k in input_dict.keys() if k not in non_numeric_keys]
 
@@ -41,7 +71,28 @@ def get_similars_euclidean_minmax(df, input_dict, n=5):
     return df_sub.sort_values('similarity_score').head(n)
 
 
-def get_similars_hierarchical(df, input_dict, n=5):
+def get_similars_hierarchical(
+    df: pd.DataFrame, 
+    input_dict: dict, 
+    n: int = 5
+) -> pd.DataFrame:
+    """
+    Encuentra propiedades similares aplicando un filtro jerárquico por barrio y tipo de propiedad,
+    y luego calcula la distancia Euclidiana normalizada (MinMaxScaler) sobre las características numéricas.
+
+    El filtro jerárquico prioriza:
+        1. Mismo barrio y tipo de propiedad.
+        2. Mismo tipo de propiedad, distinto barrio.
+        3. Distinto tipo de propiedad.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con datos de propiedades.
+        input_dict (dict): Diccionario con características de la propiedad de entrada.
+        n (int): Número de propiedades similares a devolver (default=5).
+
+    Retorna:
+        pd.DataFrame: Propiedades ordenadas por similitud considerando el filtro jerárquico.
+    """
     df = df.copy()
 
     neighborhood = input_dict.get("neighborhood")
@@ -77,7 +128,31 @@ def get_similars_hierarchical(df, input_dict, n=5):
     return selected.sort_values("similarity_score").head(n)
 
 
-def get_similars_combined_geo(df, input_dict, n=5):
+def get_similars_combined_geo(
+    df: pd.DataFrame, 
+    input_dict: dict, 
+    n: int = 5
+) -> pd.DataFrame:
+    """
+    Encuentra propiedades similares combinando distancia numérica (MinMaxScaler + Euclidiana) 
+    y distancia geográfica (en kilómetros), ponderando ambas para calcular un puntaje de similitud.
+
+    La búsqueda jerárquica es similar a la función anterior:
+        1. Mismo barrio y tipo.
+        2. Mismo tipo, distinto barrio.
+        3. Distinto tipo.
+
+    Parámetros:
+        df (pd.DataFrame): DataFrame con propiedades y coordenadas geográficas.
+        input_dict (dict): Diccionario con características de la propiedad, debe contener 'neighborhood', 'property_type', opcionalmente 'latitude' y 'longitude'.
+        n (int): Número de propiedades similares a devolver (default=5).
+
+    Retorna:
+        pd.DataFrame: Propiedades ordenadas por puntaje combinado de similitud.
+    
+    Excepciones:
+        ValueError: Si faltan 'neighborhood' o 'property_type' en input_dict.
+    """
     df = df.copy()
 
     if "neighborhood" not in input_dict or "property_type" not in input_dict:

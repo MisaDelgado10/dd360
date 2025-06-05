@@ -9,7 +9,16 @@ from dd360.compare import get_similars_hierarchical
 from dd360.extract import extract_data
 
 @st.cache_data(show_spinner=False)
-def obtener_imagen_principal(url):
+def obtener_imagen_principal(url: str) -> str:
+    """
+    Extrae la imagen principal (meta og:image) de un anuncio de propiedad.
+
+    Args:
+        url (str): URL del anuncio web.
+
+    Returns:
+        str: URL de la imagen encontrada o una imagen por defecto si no se encuentra o hay un error.
+    """
     try:
         if not url or not isinstance(url, str):
             return "https://cdn.prod.website-files.com/61e9b342b016364181c41f50/63e6833197ca517367b6be46_6%20(1).png"
@@ -26,9 +35,10 @@ def obtener_imagen_principal(url):
         st.write(f"⚠️ Error obteniendo imagen de {url}: {e}")
     return "https://cdn.prod.website-files.com/61e9b342b016364181c41f50/63e6833197ca517367b6be46_6%20(1).png"
 
-# Carga de datos
+# --- Carga de datos procesados ---
 df = extract_data("../data/processed/final_df.parquet")
 
+# --- Interfaz de usuario ---
 st.title("Encuentra propiedades similares 🏘️")
 st.markdown("Selecciona las características de la propiedad que buscas y te mostraremos las más similares.")
 
@@ -36,6 +46,7 @@ with st.form("comparables_form"):
     neighborhood = st.selectbox("Colonia", sorted(df["neighborhood"].unique()))
     property_type = st.selectbox("Tipo", df["property_type"].unique())
 
+    # Sliders para filtros numéricos
     min_price, max_price = int(df["price_per_m2"].min()), int(df["price_per_m2"].max())
     price_per_m2 = st.slider("Precio por m²", min_price, max_price, int(df["price_per_m2"].min()), format="$%d")
 
@@ -53,6 +64,7 @@ with st.form("comparables_form"):
 
     submitted = st.form_submit_button("Buscar comparables")
 
+# --- Lógica para buscar propiedades comparables ---
 if submitted:
     input_data = {
         "neighborhood": neighborhood,
@@ -64,20 +76,20 @@ if submitted:
         "has_amenities": has_amenities,
     }
 
+    # Obtener propiedades similares usando búsqueda jerárquica
     comparables = get_similars_hierarchical(df, input_data)
-    comparables = comparables.head(5)  # max 5 propiedades
-    print(comparables)
-    # Guardar en session_state para persistencia
+    comparables = comparables.head(5)  # limitar a máximo 5
+
+    # Guardar comparables e imágenes en session_state
     st.session_state["comparables"] = comparables
 
-    # Guardar imágenes en session_state para evitar recarga
     imagenes = []
     for _, row in comparables.iterrows():
         img_url = obtener_imagen_principal(row["url_ad"])
         imagenes.append(img_url)
     st.session_state["imagenes"] = imagenes
 
-# Mostrar resultados solo si ya hay comparables guardados
+# --- Mostrar resultados si existen en session_state ---
 if "comparables" in st.session_state and "imagenes" in st.session_state:
     comparables = st.session_state["comparables"]
     imagenes = st.session_state["imagenes"]
@@ -91,12 +103,11 @@ if "comparables" in st.session_state and "imagenes" in st.session_state:
         st.markdown(f"- Superficie: {row['total_surface']} m²")
         st.markdown("---")
 
+    # Mapa con ubicación de propiedades
     st.markdown("### 🗺️ Mapa:")
     m = folium.Map(location=[comparables.iloc[0]['latitude'], comparables.iloc[0]['longitude']], zoom_start=14)
 
-    # Agregar cluster para evitar que se sobrepongan los marcadores
     marker_cluster = MarkerCluster().add_to(m)
-
     for _, row in comparables.iterrows():
         title_str = f"{row['property_type']} en {row['neighborhood']}"
         folium.Marker(

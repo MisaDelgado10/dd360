@@ -15,6 +15,12 @@ Se busca un enfoque claro, escalable y explicable sobre qué significa que las p
 ## Contenido del repositorio
 
 ```
+├── data
+│   ├── external       <- Data from third party sources.
+│   ├── interim        <- Intermediate data that has been transformed.
+│   ├── processed      <- The final, canonical data sets for modeling.
+│   └── raw            <- The original, immutable data dump.
+│
 └── dd360   <- Source code for use in this project.
     │
     ├── __init__.py             <- Makes dd360 a Python module
@@ -50,74 +56,58 @@ Se busca un enfoque claro, escalable y explicable sobre qué significa que las p
 │   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for
 │                         dd360 and configuration for tools like black
-│
-│
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `pip install -r requirements.txt`
-│
 ├── setup.cfg          <- Configuration file for flake8
 
 ```
 
 --------
 
-🧠 ¿Cómo definí “comparabilidad”?
+### 🧠 ¿Cómo definí “comparabilidad”?
 Una propiedad es comparable si:
 
-Se encuentra en la misma colonia.
-
-Es del mismo tipo de propiedad (casa o departamento).
-
-Tiene características numéricas similares (número de recámaras, superficie, estado de conservación, etc.).
+a) Se encuentra en la misma colonia.
+b) Es del mismo tipo de propiedad (casa o departamento).
+c) Tiene características numéricas similares (precio por metro cuadrado, # dormitorios, # baños,  antigüedad del inmueble y si tiene amenidades como gym o jardín).
 
 Se usó un enfoque mixto:
 
-Filtrado categórico por colonia y tipo.
+Filtrado categórico por colonia y tipo y Distancia euclidiana entre variables numéricas normalizadas.
 
-Distancia euclidiana entre variables numéricas normalizadas.
-
-📊 Análisis Exploratorio
+### 📊 Análisis Exploratorio
 Se identificó que el precio varía significativamente entre colonias.
 
 El tipo de propiedad tiene fuerte relación con otras variables (casas tienen más superficie, más jardín).
 
 Variables como conservation_status, construction_surface y price presentan correlaciones importantes.
 
-🛠️ Transformaciones / Feature Engineering
-Normalización de variables numéricas.
+Muchas columnas tienen valores faltantes y la forma en cómo se van a imputar es llenándolas con la mediana de la colonia a la que pertenece el edificio. 
+Muchas columnas tienen outliers tambien, por lo que se les hará un tratamiento para normalizarlas o limitar sus rangos.
 
-Imputación de valores nulos.
+### 🛠️ Transformaciones / Feature Engineering
 
-Ingeniería de variables como:
+1. Se imputaron variables con la media
+2. Se hizo tratamiento de outliers
+3. Se crearon nuevas features con one hot encoding y otras simples como ratios i.e. price per m2
 
-Densidad de construcción (construction_surface / terrain_surface)
-
-Amenidades combinadas (has_gym o has_garden)
-
-Filtrado previo por neighborhood y property_type para reducir ruido.
-
-⚗️ Fase de Experimentación
+### ⚗️ Fase de Experimentación
 Se probaron y compararon distintos enfoques para definir la similitud:
 
-KNN con diferentes distancias.
+* get_similars_euclidean_standard: Distancia Euclidiana con Escalado Z-score
 
-PCA para reducir dimensiones.
+* get_similars_euclidean_minmax: Distancia Euclidiana con Escalado MinMax
 
-Clustering (KMeans) para ver agrupaciones naturales.
+* get_similars_hierarchical: Filtra por colonia y tipo de inmueble + Distancia Euclidiana con Escalado MinMax
 
-Regresiones lineales para evaluar importancia de variables.
+* get_similars_combined_geo: Filtra por colonia y tipo de inmueble + Distancia Euclidiana y Geodesica (usando lat y lng) con Escalado MinMax
 
 Se graficaron las métricas y se eligió el modelo con mejor score visual y lógico.
 
-🤖 Algoritmo Final (get_comparables())
+### 🤖 Algoritmo Final (get_similars_combined_geo)
 Filtra por neighborhood y property_type.
 
 Aplica escalado a variables seleccionadas.
@@ -126,31 +116,34 @@ Calcula la distancia euclidiana.
 
 Ordena por menor distancia y devuelve las 5 más cercanas.
 
-Ver implementación completa en src/comparables.py.
+Ver implementación completa en dd360_project/dd360/compare.py.
 
-📉 Limitaciones y mejoras posibles
-Si hay pocas propiedades en una colonia, no se obtienen buenos comparables. Podría considerarse usar colonias cercanas con coordenadas geográficas.
+### 📉 Limitaciones y mejoras posibles
+1. Actualmente se hicieron un par de experimentos con distancias euclidianas pero podría valer la pena probar con otros tipos de modelos más fancies
+2. Se podrían evaluar otros métodos para checar la importancia de las variables y su impacto
+3. Hacer un preprocesamiento más robusto como manejo de valores faltantes y outliers
+4. Hacer un pipeline que automatice todo end to end, desde la extracción de datos hasta el cálculo de las 5 propiedades similares
+5. Hacer pruebas unitarias
 
-Si el dataset crece mucho, se recomienda usar estructuras como KD-Trees para acelerar búsquedas.
+### 🧪 ¿Qué podría escalar mal?
+1. Si el dataset crece mucho en tamaño o en cantidad de features, escalar todos los datos en memoria puede ser lento o consumir mucha RAM.
+2. Métodos como distancia euclidiana o jerárquica sin optimizaciones pueden ser muy lentos para datasets grandes.
+3. Si muchas propiedades tienen valores faltantes, la función puede tardar más o arrojar resultados poco fiables.
+4. A mayor número de features para calcular la distancia, mayor será el costo computacional para cada comparación.
 
-Incorporar precios por m² o zonas de alta/baja plusvalía con información externa.
 
-Usar modelos supervisados si se tuviera un target de comparabilidad real.
+### 🧭 Conclusiones y recomendaciones
+Este enfoque permite comparar propiedades de forma automática y rápida, ya que antes de calcular similitud se filtra por colonia y tipo de propiedad lo que eficientiza de manera increíble el calculo de las propiedades más similares. También, la estructura del proyecto es funcional y modular, lo que podría fácilmente permitir hacer mejores y pruebas.
 
-🧪 ¿Qué podría escalar mal?
-Búsquedas lineales con muchos datos (>100,000) se vuelven lentas.
+Como recomendación: 
+1. Optimizar el cálculo de propiedades similares, talvez con estructuras de búsqueda eficientes (KDTree, BallTree). 
+2. Validar y limpiar mejor los datos. 
+3. Ampliar el análisis con técnicas modernas
+4. Considerar integración en un entorno escalable (nube)
 
-El filtrado por colonia puede limitar demasiado si hay pocos registros.
-
-El uso de distancia euclidiana no captura relaciones no lineales entre variables.
-
-🧭 Conclusiones y recomendaciones
-Este enfoque permite comparar propiedades de forma automática y rápida, facilitando su uso en plataformas inmobiliarias, valuaciones o análisis de mercado.
-El sistema puede escalar con mejoras de performance y enriquecimiento de datos externos (zonas, dinámicas históricas, etc.).
-
-▶️ Cómo correr el proyecto
+# ▶️ Cómo instalar correr el proyecto
 ```
-# 1. Clona el repositorio
+
 git clone https://github.com/tu_usuario/cuauhtemoc-comparables.git
 cd cuauhtemoc-comparables
 
@@ -159,4 +152,19 @@ pip install -r requirements.txt
 
 # 3. Ejecuta los notebooks o lanza la app (opcional)
 streamlit run app/app.py
+
+## Clona el repositorio
+1. git clone https://github.com/tu_usuario/cuauhtemoc-comparables.git
+## Crea un ambiente de conda con python 3.9
+2. cd dd360_project
+3. conda create -n dd360 python=3.9
+4. conda activate dd360
+## Instala las dependencias
+5. pip install poetry
+6. pip install pre-commit
+7. pre-commit install
+8. pip install -r requirements.txt 
+
+## Lanza la app (dashboard)
+9. streamlit run webapp/app.py
 ```
