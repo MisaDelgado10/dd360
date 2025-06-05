@@ -85,7 +85,7 @@ El tipo de propiedad tiene fuerte relación con otras variables (casas tienen m�
 
 Variables como conservation_status, construction_surface y price presentan correlaciones importantes.
 
-Muchas columnas tienen valores faltantes y la forma en cómo se van a imputar es llenándolas con la mediana de la colonia a la que pertenece el edificio. 
+Muchas columnas tienen valores faltantes y la forma en cómo se van a imputar es llenándolas con la mediana de la colonia a la que pertenece el edificio.
 Muchas columnas tienen outliers tambien, por lo que se les hará un tratamiento para normalizarlas o limitar sus rangos.
 
 ### 🛠️ Transformaciones / Feature Engineering
@@ -108,15 +108,16 @@ Se probaron y compararon distintos enfoques para definir la similitud:
 Se graficaron las métricas y se eligió el modelo con mejor score visual y lógico.
 
 ### 🤖 Algoritmo Final (get_similars_combined_geo)
-Filtra por neighborhood y property_type.
 
-Aplica escalado a variables seleccionadas.
+1. Filtra por neighborhood y property_type.
 
-Calcula la distancia euclidiana.
+2. Aplica escalado a variables seleccionadas.
 
-Ordena por menor distancia y devuelve las 5 más cercanas.
+3. Calcula la distancia euclidiana.
 
-Ver implementación completa en dd360_project/dd360/compare.py.
+4. Ordena por menor distancia y devuelve las 5 más cercanas.
+
+(Ver implementación completa en dd360_project/dd360/compare.py)
 
 ### 📉 Limitaciones y mejoras posibles
 1. Actualmente se hicieron un par de experimentos con distancias euclidianas pero podría valer la pena probar con otros tipos de modelos más fancies
@@ -135,35 +136,27 @@ Ver implementación completa en dd360_project/dd360/compare.py.
 ### 🧭 Conclusiones y recomendaciones
 Este enfoque permite comparar propiedades de forma automática y rápida, ya que antes de calcular similitud se filtra por colonia y tipo de propiedad lo que eficientiza de manera increíble el calculo de las propiedades más similares. También, la estructura del proyecto es funcional y modular, lo que podría fácilmente permitir hacer mejores y pruebas.
 
-Como recomendación: 
-1. Optimizar el cálculo de propiedades similares, talvez con estructuras de búsqueda eficientes (KDTree, BallTree). 
-2. Validar y limpiar mejor los datos. 
+Como recomendación:
+1. Optimizar el cálculo de propiedades similares, talvez con estructuras de búsqueda eficientes (KDTree, BallTree).
+2. Validar y limpiar mejor los datos.
 3. Ampliar el análisis con técnicas modernas
 4. Considerar integración en un entorno escalable (nube)
 
-# ▶️ Cómo instalar correr el proyecto
+# ▶️ Cómo instalar y correr el proyecto
 ```
-
-git clone https://github.com/tu_usuario/cuauhtemoc-comparables.git
-cd cuauhtemoc-comparables
-
-# 2. Instala las dependencias
-pip install -r requirements.txt
-
-# 3. Ejecuta los notebooks o lanza la app (opcional)
-streamlit run app/app.py
-
 ## Clona el repositorio
 1. git clone https://github.com/tu_usuario/cuauhtemoc-comparables.git
+
 ## Crea un ambiente de conda con python 3.9
 2. cd dd360_project
 3. conda create -n dd360 python=3.9
 4. conda activate dd360
+
 ## Instala las dependencias
 5. pip install poetry
 6. pip install pre-commit
 7. pre-commit install
-8. pip install -r requirements.txt 
+8. pip install -r requirements.txt
 
 ## Lanza la app (dashboard)
 9. streamlit run webapp/app.py

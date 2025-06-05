@@ -4,8 +4,8 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from geopy.distance import geodesic
 
 def get_similars_euclidean_standard(
-    df: pd.DataFrame, 
-    input_dict: dict, 
+    df: pd.DataFrame,
+    input_dict: dict,
     n: int = 5
 ) -> pd.DataFrame:
     """
@@ -38,8 +38,8 @@ def get_similars_euclidean_standard(
 
 
 def get_similars_euclidean_minmax(
-    df: pd.DataFrame, 
-    input_dict: dict, 
+    df: pd.DataFrame,
+    input_dict: dict,
     n: int = 5
 ) -> pd.DataFrame:
     """
@@ -72,8 +72,8 @@ def get_similars_euclidean_minmax(
 
 
 def get_similars_hierarchical(
-    df: pd.DataFrame, 
-    input_dict: dict, 
+    df: pd.DataFrame,
+    input_dict: dict,
     n: int = 5
 ) -> pd.DataFrame:
     """
@@ -129,12 +129,12 @@ def get_similars_hierarchical(
 
 
 def get_similars_combined_geo(
-    df: pd.DataFrame, 
-    input_dict: dict, 
+    df: pd.DataFrame,
+    input_dict: dict,
     n: int = 5
 ) -> pd.DataFrame:
     """
-    Encuentra propiedades similares combinando distancia numérica (MinMaxScaler + Euclidiana) 
+    Encuentra propiedades similares combinando distancia numérica (MinMaxScaler + Euclidiana)
     y distancia geográfica (en kilómetros), ponderando ambas para calcular un puntaje de similitud.
 
     La búsqueda jerárquica es similar a la función anterior:
@@ -149,7 +149,7 @@ def get_similars_combined_geo(
 
     Retorna:
         pd.DataFrame: Propiedades ordenadas por puntaje combinado de similitud.
-    
+
     Excepciones:
         ValueError: Si faltan 'neighborhood' o 'property_type' en input_dict.
     """
