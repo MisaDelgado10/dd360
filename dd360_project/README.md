@@ -4,9 +4,15 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-Python project to find similar houses/apartments based on an input
+## 🏠 Reto de Data Science – Comparables Inmobiliarios en Cuauhtémoc, CDMX
 
-## Project Organization
+📌 Objetivo
+
+Desarrollar una función get_comparables() que, a partir de hasta 7 inputs simples, devuelva una lista con los url_ad de las 5 propiedades más similares (comparables) dentro del dataset proporcionado.
+Se busca un enfoque claro, escalable y explicable sobre qué significa que dos propiedades sean comparables.
+
+
+## Contenido del repositorio
 
 ```
 ├── LICENSE            <- Open-source license if one is chosen
@@ -58,3 +64,95 @@ Python project to find similar houses/apartments based on an input
 ```
 
 --------
+
+🧠 ¿Cómo definí “comparabilidad”?
+Una propiedad es comparable si:
+
+Se encuentra en la misma colonia.
+
+Es del mismo tipo de propiedad (casa o departamento).
+
+Tiene características numéricas similares (número de recámaras, superficie, estado de conservación, etc.).
+
+Se usó un enfoque mixto:
+
+Filtrado categórico por colonia y tipo.
+
+Distancia euclidiana entre variables numéricas normalizadas.
+
+📊 Análisis Exploratorio
+Se identificó que el precio varía significativamente entre colonias.
+
+El tipo de propiedad tiene fuerte relación con otras variables (casas tienen más superficie, más jardín).
+
+Variables como conservation_status, construction_surface y price presentan correlaciones importantes.
+
+🛠️ Transformaciones / Feature Engineering
+Normalización de variables numéricas.
+
+Imputación de valores nulos.
+
+Ingeniería de variables como:
+
+Densidad de construcción (construction_surface / terrain_surface)
+
+Amenidades combinadas (has_gym o has_garden)
+
+Filtrado previo por neighborhood y property_type para reducir ruido.
+
+⚗️ Fase de Experimentación
+Se probaron y compararon distintos enfoques para definir la similitud:
+
+KNN con diferentes distancias.
+
+PCA para reducir dimensiones.
+
+Clustering (KMeans) para ver agrupaciones naturales.
+
+Regresiones lineales para evaluar importancia de variables.
+
+Se graficaron las métricas y se eligió el modelo con mejor score visual y lógico.
+
+🤖 Algoritmo Final (get_comparables())
+Filtra por neighborhood y property_type.
+
+Aplica escalado a variables seleccionadas.
+
+Calcula la distancia euclidiana.
+
+Ordena por menor distancia y devuelve las 5 más cercanas.
+
+Ver implementación completa en src/comparables.py.
+
+📉 Limitaciones y mejoras posibles
+Si hay pocas propiedades en una colonia, no se obtienen buenos comparables. Podría considerarse usar colonias cercanas con coordenadas geográficas.
+
+Si el dataset crece mucho, se recomienda usar estructuras como KD-Trees para acelerar búsquedas.
+
+Incorporar precios por m² o zonas de alta/baja plusvalía con información externa.
+
+Usar modelos supervisados si se tuviera un target de comparabilidad real.
+
+🧪 ¿Qué podría escalar mal?
+Búsquedas lineales con muchos datos (>100,000) se vuelven lentas.
+
+El filtrado por colonia puede limitar demasiado si hay pocos registros.
+
+El uso de distancia euclidiana no captura relaciones no lineales entre variables.
+
+🧭 Conclusiones y recomendaciones
+Este enfoque permite comparar propiedades de forma automática y rápida, facilitando su uso en plataformas inmobiliarias, valuaciones o análisis de mercado.
+El sistema puede escalar con mejoras de performance y enriquecimiento de datos externos (zonas, dinámicas históricas, etc.).
+
+▶️ Cómo correr el proyecto
+```
+# 1. Clona el repositorio
+git clone https://github.com/tu_usuario/cuauhtemoc-comparables.git
+cd cuauhtemoc-comparables
+
+# 2. Instala las dependencias
+pip install -r requirements.txt
+
+# 3. Ejecuta los notebooks o lanza la app (opcional)
+streamlit run app/app.py
+```
