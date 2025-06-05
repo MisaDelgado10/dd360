@@ -142,6 +142,10 @@ Como recomendación:
 3. Ampliar el análisis con técnicas modernas
 4. Considerar integración en un entorno escalable (nube)
 
+### BONUS
+
+Se hizo un dashboard en streamlit para obtener las 5 propiedades más similares en función de 7 features. Puedes correr el proyecto como se indica abajo o puedes ver una prueba de cómo funcciona en reports/figures/webapp_*.jpg
+
 # ▶️ Cómo instalar y correr el proyecto
 ```
 ## Clona el repositorio
