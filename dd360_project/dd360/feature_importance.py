@@ -34,7 +34,7 @@ class FeatureSelectionPipeline:
         self.pca.fit(self.X_scaled)
 
         plt.figure(figsize=(8,5))
-        plt.plot(range(1, len(self.pca.explained_variance_ratio_) + 1), 
+        plt.plot(range(1, len(self.pca.explained_variance_ratio_) + 1),
                  self.pca.explained_variance_ratio_.cumsum(), marker='o')
         plt.xlabel('Número de componentes')
         plt.ylabel('Varianza explicada acumulada')
@@ -42,7 +42,7 @@ class FeatureSelectionPipeline:
         plt.grid(True)
         plt.show()
 
-        loadings = pd.DataFrame(self.pca.components_.T, 
+        loadings = pd.DataFrame(self.pca.components_.T,
                                 columns=[f'PC{i+1}' for i in range(len(self.pca.components_))],
                                 index=self.df_features.columns)
         print("\nLoadings (importancia de features en cada componente):")
@@ -75,10 +75,10 @@ class FeatureSelectionPipeline:
         """
         cols_to_exclude = ['property_id', 'listing_type', 'property_type', 'url_ad', 'neighborhood']
         df = df.drop(columns=cols_to_exclude, errors='ignore')
-        
+
         # Opcional: seleccionar solo columnas numéricas y bool (convertidas a float después)
         df = df.select_dtypes(include=[np.number, 'bool'])
-        
+
         self.features = df
         self.target = df['price']  # o la variable objetivo que estés usando
         self.features = df.drop(columns=['price'])  # o cualquier otra columna que no quieras usar como feature

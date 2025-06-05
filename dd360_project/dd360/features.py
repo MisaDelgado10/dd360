@@ -36,7 +36,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     if "property_type" in df.columns:
         # Crear dummies aparte
         dummies = pd.get_dummies(df["property_type"], prefix="type").astype(float)
-        
+
         # Concatenar con el DataFrame original
         df = pd.concat([df, dummies], axis=1)
 
@@ -44,7 +44,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     if "neighborhood" in df.columns:
         # Crear dummies aparte
         neigh_ohe = pd.get_dummies(df['neighborhood'], prefix='neigh').astype(float)
-        
+
         # Concatenar con el DataFrame original
         df = pd.concat([df, neigh_ohe], axis=1)
 
