@@ -9,58 +9,62 @@
 📌 Objetivo
 
 Desarrollar una función get_comparables() que, a partir de hasta 7 inputs simples, devuelva una lista con los url_ad de las 5 propiedades más similares (comparables) dentro del dataset proporcionado.
-Se busca un enfoque claro, escalable y explicable sobre qué significa que dos propiedades sean comparables.
+Se busca un enfoque claro, escalable y explicable sobre qué significa que las propiedades sean comparables.
 
 
 ## Contenido del repositorio
 
 ```
-├── LICENSE            <- Open-source license if one is chosen
+└── dd360   <- Source code for use in this project.
+    │
+    ├── __init__.py             <- Makes dd360 a Python module
+    │
+    ├── compare.py              <- has different functions to calculate similar buildings
+    │
+    ├── config.py               <- Store useful variables and configuration
+    │
+    ├── experiments.py          <- This works as a testing file to produce an average similarity score of the functions in compare.py
+    │
+    ├── extract.py              <- This extracts data stored in the data/ folder
+    │
+    ├── feature_importance.py   <- It runs different experiments to see the most important variables (correlation, PCA, etc)
+    │
+    ├── features.py             <- Code to create new features for the similarity experiment
+    │
+    ├── transform.py             <- Code to imput missing values, trate outliers and standardize feature values
+    │
+    ├── modeling
+    │   ├── __init__.py
+    │   ├── predict.py          <- Code to run model inference with trained models (not used in this stage)
+    └── ├── train.py            <- Code to train models (not used in this stage)
+│
+├── docs               <- A default mkdocs project; see www.mkdocs.org for details
+│
+├── models             <- Trained and serialized models, model predictions, or model summaries (not used in this stage)
+│
+├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
+│                         `1.EDA.ipynb`.
+├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+│
+├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures        <- Generated graphics and figures to be used in reporting
+│
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
 ├── data
 │   ├── external       <- Data from third party sources.
 │   ├── interim        <- Intermediate data that has been transformed.
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
-│
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
-│
 ├── pyproject.toml     <- Project configuration file with package metadata for
 │                         dd360 and configuration for tools like black
 │
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+│                         generated with `pip install -r requirements.txt`
 │
 ├── setup.cfg          <- Configuration file for flake8
-│
-└── dd360   <- Source code for use in this project.
-    │
-    ├── __init__.py             <- Makes dd360 a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling
-    │   ├── __init__.py
-    │   ├── predict.py          <- Code to run model inference with trained models
-    │   └── train.py            <- Code to train models
-    │
-    └── plots.py                <- Code to create visualizations
+
 ```
 
 --------

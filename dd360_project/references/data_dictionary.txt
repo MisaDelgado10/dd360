@@ -1,0 +1,28 @@
+Raw columns:
+
+price: Precio de la propieadad
+url_ad: link al anuncio de la propiedad (puede que te salgan expirados por que será una tabla estática) 
+num_bedrooms: Número de dormitorios 
+num_bathrooms: Numero de baños 
+construction_surface: Área de construcción 
+terrain_surface: Área de terreno
+built_year: Año de construcción ó remodelación de la propiedad 
+latitude: latitud
+longitude: longitud
+neighborhood: colonia 
+id_neighborhood: id de la colonia 
+conservation_status: estado de conservación (valores del 0-1)
+property_type: casa o departamento 
+listing_type: renta o venta (solo te proporciono de venta) 
+has_gym: 1 si tiene gimnasio, 0 no tiene
+has_garden: 1 si tiene jardín, 0 no tiene 
+
+New features:
+price_per_m2: Precio por metro cuadrado
+total_surface: Área de construcción  + Área de terreno
+age: Edad del inmueble = 2025 - built_year
+has_amenities: Si tiene gym o jardín
+type_apartment: 1 es apartamento, 0 es casa 
+type_house: 1 es casa, 0 es apartamento
+neigh_{nombre_colonia}: tenemos n variables por cada valor único de colonia, 1 te indica si es esa colonia, de lo contrario es 0
+i.e neigh_CONDESA = 1 significa que ese inmueble está en la condesa
